@@ -2,15 +2,15 @@
 
 set -e
 
-[ -z "${GITHUB_PAT}" ] && exit 0
-[ "${TRAVIS_BRANCH}" != "master" ] && exit 0
+git config --global user.email "yue.zhao@gdmexchange.io"
+git config --global user.name "yuez-gdm"
 
-git config --global user.email "xie@yihui.name"
-git config --global user.name "Yihui Xie"
-
-git clone -b gh-pages https://${GITHUB_PAT}@github.com/${TRAVIS_REPO_SLUG}.git book-output
+mkdir -p book-output
 cd book-output
 cp -r ../_book/* ./
+git init
+git remote add origin git@github.com:yuez-gdm/the-grammer-of-data-science.git
 git add --all *
 git commit -m"Update the book" || true
+
 git push -q origin gh-pages
