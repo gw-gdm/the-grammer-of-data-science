@@ -1,0 +1,74 @@
+# Tabular Data Representation - DataTable
+
+## DataTable Schema
+
+Most data science programming languages derive the DataTable schema from the data source. This is easy when the 
+data source itself has a schema, such as a SQL table, or the data source itself is consistent and complete, such 
+as a CSV file with no missing field in it's first row. 
+
+In real world, we often work with imperfect data so a defining the schema upfront is preferred. 
+
+**Example** The FTX exchange provides a RESTful API for users to retrieve balance of all tokens in their wallet. 
+When the wallet has at least one token with non-trivial balance, the response message body like the following:
+
+```json
+{
+    "success": true,
+    "result": [
+        {
+            "coin": "ETH",
+            "total": -0.05008361,
+            "free": 0.60553512,
+            "availableForWithdrawal": 0.60553512,
+            "availableWithoutBorrow": 0,
+            "usdValue": -65.54655549160535,
+            "spotBorrow": 0.05008361
+        }
+    ]
+}
+```
+
+We can easily convert this JSON object into a DataTable in python:
+
+```python
+import requests
+from pandas import DataFrame
+
+resp = requests.get("https://ftx.com/api/wallet/balances") # ignore authentication
+assert resp.status_code == 200, f"Request failed {resp.text}"
+df = DataFrame(resp.json()["result"])
+```
+
+However, if the wallet is empty, the response body becomes:
+
+```json
+{
+    "success": true,
+    "result": []
+}
+```
+
+With this empty response, the python script above would generate an empty DataFrame with completely different
+schema. The proper way to set schema is to explicitly specify the column names and types:
+
+```python
+responsJson = []  # assume we got empty data from the API response
+I = lambda x: x.split(",")
+df = DataFrame(
+    responsJson, 
+    columns=I("coin,total,free,availableForWithdrawal,availableWithoutBorrow,usdValue,spotBorrow")
+)
+for col in I("total,free,availableForWithdrawal,availableWithoutBorrow,usdValue,spotBorrow"):
+  df[col] = pd.to_numeric(df[col])
+```
+
+As you can see, this is verbose. Even worse, the logic is implemeted in two steps:
+
+* step 1, set column names and load data;
+* step 2, set schema for each column (and cast column types if necessary).
+
+This is un-natural. The better way to implement this would be:
+
+* step 1, set column names and types;
+* step 2, load data.
+

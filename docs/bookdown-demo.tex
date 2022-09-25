@@ -124,7 +124,7 @@
 
 \title{A Minimal Book Example}
 \author{Yihui Xie}
-\date{2022-09-10}
+\date{2022-09-25}
 
 \begin{document}
 \maketitle
@@ -151,6 +151,100 @@ The \textbf{bookdown} package can be installed from CRAN or Github:
 Remember each Rmd file contains one and only one chapter, and a chapter is defined by the first-level heading \texttt{\#}.
 
 To compile this example to PDF, you need XeLaTeX. You are recommended to install TinyTeX (which includes XeLaTeX): \url{https://yihui.name/tinytex/}.
+
+\hypertarget{tabular-data-representation---datatable}{%
+\chapter{Tabular Data Representation - DataTable}\label{tabular-data-representation---datatable}}
+
+\hypertarget{datatable-schema}{%
+\section{DataTable Schema}\label{datatable-schema}}
+
+Most data science programming languages derive the DataTable schema from the data source. This is easy when the
+data source itself has a schema, such as a SQL table, or the data source itself is consistent and complete, such
+as a CSV file with no missing field in it's first row.
+
+In real world, we often work with imperfect data so a defining the schema upfront is preferred.
+
+\textbf{Example} The FTX exchange provides a RESTful API for users to retrieve balance of all tokens in their wallet.
+When the wallet has at least one token with non-trivial balance, the response message body like the following:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \DataTypeTok{"success"}\FunctionTok{:} \KeywordTok{true}\FunctionTok{,}
+    \DataTypeTok{"result"}\FunctionTok{:} \OtherTok{[}
+        \FunctionTok{\{}
+            \DataTypeTok{"coin"}\FunctionTok{:} \StringTok{"ETH"}\FunctionTok{,}
+            \DataTypeTok{"total"}\FunctionTok{:} \FloatTok{{-}0.05008361}\FunctionTok{,}
+            \DataTypeTok{"free"}\FunctionTok{:} \FloatTok{0.60553512}\FunctionTok{,}
+            \DataTypeTok{"availableForWithdrawal"}\FunctionTok{:} \FloatTok{0.60553512}\FunctionTok{,}
+            \DataTypeTok{"availableWithoutBorrow"}\FunctionTok{:} \DecValTok{0}\FunctionTok{,}
+            \DataTypeTok{"usdValue"}\FunctionTok{:} \FloatTok{{-}65.54655549160535}\FunctionTok{,}
+            \DataTypeTok{"spotBorrow"}\FunctionTok{:} \FloatTok{0.05008361}
+        \FunctionTok{\}}
+    \OtherTok{]}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+We can easily convert this JSON object into a DataTable in python:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ requests}
+\ImportTok{from}\NormalTok{ pandas }\ImportTok{import}\NormalTok{ DataFrame}
+
+\NormalTok{resp }\OperatorTok{=}\NormalTok{ requests.get(}\StringTok{"https://ftx.com/api/wallet/balances"}\NormalTok{) }\CommentTok{\# ignore authentication}
+\ControlFlowTok{assert}\NormalTok{ resp.status\_code }\OperatorTok{==} \DecValTok{200}\NormalTok{, }\SpecialStringTok{f"Request failed }\SpecialCharTok{\{}\NormalTok{resp}\SpecialCharTok{.}\NormalTok{text}\SpecialCharTok{\}}\SpecialStringTok{"}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ DataFrame(resp.json()[}\StringTok{"result"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+However, if the wallet is empty, the response body becomes:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+    \DataTypeTok{"success"}\FunctionTok{:} \KeywordTok{true}\FunctionTok{,}
+    \DataTypeTok{"result"}\FunctionTok{:} \OtherTok{[]}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+With this empty response, the python script above would generate an empty DataFrame with completely different
+schema. The proper way to set schema is to explicitly specify the column names and types:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{responsJson }\OperatorTok{=}\NormalTok{ []  }\CommentTok{\# assume we got empty data from the API response}
+\NormalTok{I }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ x: x.split(}\StringTok{","}\NormalTok{)}
+\NormalTok{df }\OperatorTok{=}\NormalTok{ DataFrame(}
+\NormalTok{    responsJson, }
+\NormalTok{    columns}\OperatorTok{=}\NormalTok{I(}\StringTok{"coin,total,free,availableForWithdrawal,availableWithoutBorrow,usdValue,spotBorrow"}\NormalTok{)}
+\NormalTok{)}
+\ControlFlowTok{for}\NormalTok{ col }\KeywordTok{in}\NormalTok{ I(}\StringTok{"total,free,availableForWithdrawal,availableWithoutBorrow,usdValue,spotBorrow"}\NormalTok{):}
+\NormalTok{  df[col] }\OperatorTok{=}\NormalTok{ pd.to\_numeric(df[col])}
+\end{Highlighting}
+\end{Shaded}
+
+As you can see, this is verbose. Even worse, the logic is implemeted in two steps:
+
+\begin{itemize}
+\tightlist
+\item
+  step 1, set column names and load data;
+\item
+  step 2, set schema for each column (and cast column types if necessary).
+\end{itemize}
+
+This is un-natural. The better way to implement this would be:
+
+\begin{itemize}
+\tightlist
+\item
+  step 1, set column names and types;
+\item
+  step 2, load data.
+\end{itemize}
 
 \hypertarget{intro}{%
 \chapter{Introduction}\label{intro}}
