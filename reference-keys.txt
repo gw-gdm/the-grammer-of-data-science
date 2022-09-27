@@ -1,0 +1,15 @@
+fig:nice-fig
+tab:nice-tab
+prerequisites
+tabular-data-representation---datatable
+datatable-schema
+intro
+literature
+methods
+math-example
+applications
+example-one
+example-two
+final-words
+tabular-data-representation---datatable-1
+datatable-schema-1

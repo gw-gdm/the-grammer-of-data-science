@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 6 Applications | A Minimal Book Example</title>
+  <title>Chapter 2 Tabular Data Representation - DataTable | A Minimal Book Example</title>
   <meta name="description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
   <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 6 Applications | A Minimal Book Example" />
+  <meta property="og:title" content="Chapter 2 Tabular Data Representation - DataTable | A Minimal Book Example" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 6 Applications | A Minimal Book Example" />
+  <meta name="twitter:title" content="Chapter 2 Tabular Data Representation - DataTable | A Minimal Book Example" />
   
   <meta name="twitter:description" content="This is a minimal example of using the bookdown package to write a book. The output format for this example is bookdown::gitbook." />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="methods.html"/>
-<link rel="next" href="final-words.html"/>
+<link rel="prev" href="index.html"/>
+<link rel="next" href="intro.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -172,14 +172,62 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="applications" class="section level1 hasAnchor">
-<h1><span class="header-section-number">Chapter 6</span> Applications<a href="applications.html#applications" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Some <em>significant</em> applications are demonstrated in this chapter.</p>
-<div id="example-one" class="section level2 hasAnchor">
-<h2><span class="header-section-number">6.1</span> Example one<a href="applications.html#example-one" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-</div>
-<div id="example-two" class="section level2 hasAnchor">
-<h2><span class="header-section-number">6.2</span> Example two<a href="applications.html#example-two" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="tabular-data-representation---datatable" class="section level1 hasAnchor">
+<h1><span class="header-section-number">Chapter 2</span> Tabular Data Representation - DataTable<a href="tabular-data-representation---datatable.html#tabular-data-representation---datatable" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="datatable-schema" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.1</span> DataTable Schema<a href="tabular-data-representation---datatable.html#datatable-schema" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Most data science programming languages derive the DataTable schema from the data source. This is easy when the
+data source itself has a schema, such as a SQL table, or the data source itself is consistent and complete, such
+as a CSV file with no missing field in it’s first row.</p>
+<p>In real world, we often work with imperfect data so a defining the schema upfront is preferred.</p>
+<p><strong>Example</strong> The FTX exchange provides a RESTful API for users to retrieve balance of all tokens in their wallet.
+When the wallet has at least one token with non-trivial balance, the response message body like the following:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode json"><code class="sourceCode json"><a class="sourceLine" id="cb2-1" title="1"><span class="fu">{</span></a>
+<a class="sourceLine" id="cb2-2" title="2">    <span class="dt">&quot;success&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></a>
+<a class="sourceLine" id="cb2-3" title="3">    <span class="dt">&quot;result&quot;</span><span class="fu">:</span> <span class="ot">[</span></a>
+<a class="sourceLine" id="cb2-4" title="4">        <span class="fu">{</span></a>
+<a class="sourceLine" id="cb2-5" title="5">            <span class="dt">&quot;coin&quot;</span><span class="fu">:</span> <span class="st">&quot;ETH&quot;</span><span class="fu">,</span></a>
+<a class="sourceLine" id="cb2-6" title="6">            <span class="dt">&quot;total&quot;</span><span class="fu">:</span> <span class="fl">-0.05008361</span><span class="fu">,</span></a>
+<a class="sourceLine" id="cb2-7" title="7">            <span class="dt">&quot;free&quot;</span><span class="fu">:</span> <span class="fl">0.60553512</span><span class="fu">,</span></a>
+<a class="sourceLine" id="cb2-8" title="8">            <span class="dt">&quot;availableForWithdrawal&quot;</span><span class="fu">:</span> <span class="fl">0.60553512</span><span class="fu">,</span></a>
+<a class="sourceLine" id="cb2-9" title="9">            <span class="dt">&quot;availableWithoutBorrow&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span></a>
+<a class="sourceLine" id="cb2-10" title="10">            <span class="dt">&quot;usdValue&quot;</span><span class="fu">:</span> <span class="fl">-65.54655549160535</span><span class="fu">,</span></a>
+<a class="sourceLine" id="cb2-11" title="11">            <span class="dt">&quot;spotBorrow&quot;</span><span class="fu">:</span> <span class="fl">0.05008361</span></a>
+<a class="sourceLine" id="cb2-12" title="12">        <span class="fu">}</span></a>
+<a class="sourceLine" id="cb2-13" title="13">    <span class="ot">]</span></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="fu">}</span></a></code></pre></div>
+<p>We can easily convert this JSON object into a DataTable in python:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" title="1"><span class="im">import</span> requests</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="im">from</span> pandas <span class="im">import</span> DataFrame</a>
+<a class="sourceLine" id="cb3-3" title="3"></a>
+<a class="sourceLine" id="cb3-4" title="4">resp <span class="op">=</span> requests.get(<span class="st">&quot;https://ftx.com/api/wallet/balances&quot;</span>) <span class="co"># ignore authentication</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="cf">assert</span> resp.status_code <span class="op">==</span> <span class="dv">200</span>, <span class="ss">f&quot;Request failed </span><span class="sc">{</span>resp<span class="sc">.</span>text<span class="sc">}</span><span class="ss">&quot;</span></a>
+<a class="sourceLine" id="cb3-6" title="6">df <span class="op">=</span> DataFrame(resp.json()[<span class="st">&quot;result&quot;</span>])</a></code></pre></div>
+<p>However, if the wallet is empty, the response body becomes:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode json"><code class="sourceCode json"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">{</span></a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="dt">&quot;success&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></a>
+<a class="sourceLine" id="cb4-3" title="3">    <span class="dt">&quot;result&quot;</span><span class="fu">:</span> <span class="ot">[]</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="fu">}</span></a></code></pre></div>
+<p>With this empty response, the python script above would generate an empty DataFrame with completely different
+schema. The proper way to set schema is to explicitly specify the column names and types:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" title="1">responsJson <span class="op">=</span> []  <span class="co"># assume we got empty data from the API response</span></a>
+<a class="sourceLine" id="cb5-2" title="2">I <span class="op">=</span> <span class="kw">lambda</span> x: x.split(<span class="st">&quot;,&quot;</span>)</a>
+<a class="sourceLine" id="cb5-3" title="3">df <span class="op">=</span> DataFrame(</a>
+<a class="sourceLine" id="cb5-4" title="4">    responsJson, </a>
+<a class="sourceLine" id="cb5-5" title="5">    columns<span class="op">=</span>I(<span class="st">&quot;coin,total,free,availableForWithdrawal,availableWithoutBorrow,usdValue,spotBorrow&quot;</span>)</a>
+<a class="sourceLine" id="cb5-6" title="6">)</a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="cf">for</span> col <span class="kw">in</span> I(<span class="st">&quot;total,free,availableForWithdrawal,availableWithoutBorrow,usdValue,spotBorrow&quot;</span>):</a>
+<a class="sourceLine" id="cb5-8" title="8">  df[col] <span class="op">=</span> pd.to_numeric(df[col])</a></code></pre></div>
+<p>As you can see, this is verbose. Even worse, the logic is implemeted in two steps:</p>
+<ul>
+<li>step 1, set column names and load data;</li>
+<li>step 2, set schema for each column (and cast column types if necessary).</li>
+</ul>
+<p>This is un-natural. The better way to implement this would be:</p>
+<ul>
+<li>step 1, set column names and types;</li>
+<li>step 2, load data.</li>
+</ul>
 
 </div>
 </div>
@@ -188,8 +236,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-<a href="methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="final-words.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="intro.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -220,7 +268,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-application.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/000-DataTable.Rmd",
 "text": "Edit"
 },
 "history": {
